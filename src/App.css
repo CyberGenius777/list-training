@@ -1,0 +1,60 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+/* При появлении скрола элементы не сдигваются */
+/* prettier-ignore */
+html {
+  overflow-x: hidden;
+  margin-right: calc(-1 * (100vw - 100%)); /* высчитывается размер скролбара, если он есть, иначе 0*/
+}
+body {
+  scroll-behavior: smooth;
+}
+
+.container {
+  width: 1024px;
+  padding: 10px;
+  margin: 0 auto;
+}
+button {
+  padding: 10px 25px;
+  border: 1px solid teal;
+  transition: 0.2s;
+  border-radius: 7px;
+}
+button:hover {
+  cursor: pointer;
+  color: #fff;
+  background-color: #006363;
+}
+.textfield {
+  padding: 5px 0 !important;
+  width: 100%;
+}
+.create-post {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.button {
+  margin-top: 10px !important;
+  width: 300px;
+}
+.show-posts {
+  margin: 40px 0;
+}
+
+body::-webkit-scrollbar {
+  width: 10px;
+}
+
+body::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid slategrey;
+}
