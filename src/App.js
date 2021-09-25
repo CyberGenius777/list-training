@@ -1,12 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import PostList from './components/PostList'
 import CreatePost from './components/CreatePost'
 import PostFilter from './components/PostFilter'
 import { toast, ToastContainer } from 'react-toastify'
 import MyModal from './components/UI/MyModal/MyModal'
 import { usePosts } from './hooks/usePosts'
-
+import { bounceInRight } from 'react-animations'
 import './App.css'
+import PostService from './API/PostService'
+import Loader from './components/UI/Loader/Loader'
+import { useFetching } from './hooks/useFetching'
+import { getPageCount, getPagesArray } from './utils/pages'
+import Pagination from './components/UI/pagination/Pagination'
 
 const styles = {
   li: {
@@ -20,35 +25,30 @@ const styles = {
   showYearColor: {
     color: '#a1a1a1',
   },
+  bounceInRight: {
+    animation: 'x 1s',
+    animationName: bounceInRight,
+  },
 }
 
 function App() {
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: 'Уткин о сборной',
-      description:
-        'Ничья с Хорватией важна лишь с 6 очками с Кипром и Мальтой. Не верьте тем, кто про карликов говорит',
-      year: new Date().toLocaleTimeString(),
-    },
-    {
-      id: 2,
-      title: 'Новая BMW M5 станет мощнее, чем когда-либо — но окажется гибридом',
-      description:
-        'BMW начнёт выводить на рынок новое поколение 5‑й серии в 2023 году. Как пишет Autocar, флагманом семейства останется BMW M5, но двигатель спортседана ждёт концепту­альная переработка: M5 превратится в подключаемый гибрид. Отдача её силовой установки составит около 750 л.с., при этом позже в семействе появятся и ещё более мощные версии',
-      year: new Date().toLocaleTimeString(),
-    },
-    {
-      id: 3,
-      title: 'Mercedes-AMG анонсировал премьеру первого электрокара',
-      description:
-        'Mercedes-AMG вслед за первым серийным гибридом готовится показать и первую модель с полностью электрической силовой установкой',
-      year: new Date().toLocaleTimeString(),
-    },
-  ])
+  const [posts, setPosts] = useState([])
   const [filter, setFilter] = useState({ sort: '', query: '' })
   const [modal, setModal] = useState(false)
+  const [totalPages, setTotalPages] = useState(0)
+  const [limit, setLimit] = useState(10)
+  const [page, setPage] = useState(1)
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
+  const [fetchPosts, isPostsLoading, postError] = useFetching(async () => {
+    const response = await PostService.getAll(limit, page)
+    setPosts(response.data)
+    const totalCount = response.headers['x-total-count']
+    setTotalPages(getPageCount(totalCount, limit))
+  })
+
+  useEffect(() => {
+    fetchPosts()
+  }, [page])
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost])
@@ -69,6 +69,7 @@ function App() {
     <div className='App'>
       <div className='container'>
         <button onClick={() => setModal(true)}>Создать пост</button>
+        <button onClick={() => setPosts([])}>Удалить посты</button>
         <MyModal visible={modal} setVisible={setModal}>
           <div className='create-post'>
             <CreatePost create={createPost} />
@@ -76,14 +77,25 @@ function App() {
         </MyModal>
 
         <PostFilter filter={filter} setFilter={setFilter} />
-
+        {postError &&
+          toast(postError, {
+            type: toast.TYPE.ERROR,
+            position: toast.POSITION.TOP_CENTER,
+            autoClose: 1500,
+            theme: 'colored',
+          })}
         <div className='show-posts'>
-          <PostList
-            remove={removePost}
-            posts={sortedAndSearchedPosts}
-            title='News'
-            styles={styles}
-          />
+          {isPostsLoading ? (
+            <Loader />
+          ) : (
+            <PostList
+              remove={removePost}
+              posts={sortedAndSearchedPosts}
+              title='News'
+              styles={styles}
+            />
+          )}
+          <Pagination page={page} changePage={setPage} totalPages={totalPages} />
         </div>
 
         <ToastContainer

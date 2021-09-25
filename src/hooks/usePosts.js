@@ -14,7 +14,7 @@ export const usePosts = (posts, sort, query) => {
     return sortedPosts.filter(
       (post) =>
         post.title.toLowerCase().includes(query.toLowerCase()) ||
-        post.description.toLowerCase().includes(query.toLowerCase()),
+        post.body.toLowerCase().includes(query.toLowerCase()),
     )
   }, [query, sortedPosts])
 

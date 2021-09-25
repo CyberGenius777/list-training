@@ -6,15 +6,15 @@ import WarningIcon from '@material-ui/icons/Warning'
 const CreatePost = ({ create }) => {
   const [post, setPost] = useState({
     title: '',
-    description: '',
+    body: '',
   })
 
-  const createPost = ({ title, description }) => {
-    if (title && description) {
+  const createPost = ({ title, body }) => {
+    if (title && body) {
       const newPost = { ...post, id: Date.now() }
       create(newPost)
 
-      setPost({ title: '', description: '' })
+      setPost({ title: '', body: '' })
     } else {
       toast('Не все поля заполнены', {
         position: toast.POSITION.TOP_CENTER,
@@ -39,8 +39,8 @@ const CreatePost = ({ create }) => {
         variant='outlined'
         className='textfield'
         placeholder='Описание поста'
-        value={post.description}
-        onChange={(e) => setPost({ ...post, description: e.target.value })}
+        value={post.body}
+        onChange={(e) => setPost({ ...post, body: e.target.value })}
       />
       <Button
         onClick={() => createPost(post)}

@@ -1,11 +1,13 @@
-const PostItem = ({ posts: { id, title, description, year }, remove, number, styles }) => {
+const PostItem = ({ posts: { id, title, body }, remove, styles }) => {
   return (
     <li style={styles.li}>
       <div style={styles.container}>
         <div>
-          {number}. {title}
+          <h4>
+            {id}. {title}
+          </h4>
         </div>
-        <p>{description}</p>
+        <p>{body}</p>
       </div>
       <button onClick={() => remove(id)}>Удалить</button>
     </li>
